@@ -1,55 +1,51 @@
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class Notebook {
 
-    private final String fileName = "notebook.txt";
+    File file = new File("notebook.txt");
 
-    // Write text to file (append mode)
     public void writeToFile(String text) throws IOException {
-        File file = new File(fileName);
-
         // If the file does not exist, create it
         if (!file.exists()) {
             file.createNewFile();
         }
 
-        // Write (append) text to the file
-        FileWriter writer = new FileWriter(file, true); // 'true' means append mode
-        writer.write(text + System.lineSeparator());
+        // Append the text exactly as received (NO extra newline)
+        FileWriter writer = new FileWriter(file, true); // append = true
+        writer.write(text);
         writer.close();
     }
 
-    // Read all content from the file and return it
     public String readFromFile() throws IOException {
-        File file = new File(fileName);
-
         // If file does not exist, return null
         if (!file.exists()) {
             return null;
         }
 
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        StringBuilder content = new StringBuilder();
-        String line;
+        // Read entire content exactly as stored
+        Scanner scanner = new Scanner(file);
+        scanner.useDelimiter("\\Z"); // end of input
 
-        while ((line = reader.readLine()) != null) {
-            content.append(line).append(System.lineSeparator());
+        String content;
+        if (scanner.hasNext()) {
+            content = scanner.next(); // whole file as one String
+        } else {
+            content = ""; // empty file
         }
 
-        reader.close();
-        return content.toString();
+        scanner.close();
+        return content;
     }
 
-    // Delete the file if it exists
     public boolean deleteFile() {
-        File file = new File(fileName);
-
         // If file exists, delete it and return the result
         if (file.exists()) {
             return file.delete();
         }
-
-        return false; // File did not exist
+        return false; // file did not exist
     }
-}
 
+}
